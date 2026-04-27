@@ -137,9 +137,9 @@
   :custom-face
   (eglot-highlight-symbol-face ((t (:inherit secondary-selection))))
   :config
-  (setq eglot-events-buffer-size 0
+  (setq eglot-events-buffer-config 0
         eglot-ignored-server-capabilities '(:inlayHintProvider)
-        eglot-confirm-server-initiated-edits nil))
+        eglot-confirm-server-edits nil))
 
 ;;
 ;; Magit - a git porcelain
@@ -177,22 +177,21 @@
   (add-hook 'after-save-hook 'magit-after-save-refresh-status t))
 
 ;; Treemacs magit
-(use-package treemacs-magit
-  :straight t)
+(use-package treemacs-magit :straight t)
 
 ;;git history views and git blame
 (use-package git-timemachine)
 
-;; Show git diff in gutter
-(use-package git-gutter
-  :hook (prog-mode . git-gutter-mode))
-
 ;; Show git diff in fringe
+(use-package fringe-helper :straight t)
 (use-package git-gutter-fringe
   :config
-  (define-fringe-bitmap 'git-gutter-fr:added [224] nil nil '(center repeated))
-  (define-fringe-bitmap 'git-gutter-fr:modified [224] nil nil '(center repeated))
-  (define-fringe-bitmap 'git-gutter-fr:deleted [128 192 224 240] nil nil 'bottom))
+  ;; Please adjust fringe width if your own sign is too big.
+  (setq-default left-fringe-width  10)
+  (setq-default right-fringe-width 10)
+  (set-face-foreground 'git-gutter-fr:modified "yellow")
+  (set-face-foreground 'git-gutter-fr:added    "blue")
+  (set-face-foreground 'git-gutter-fr:deleted  "white"))
 
 ;;
 ;; Smart paren handling
@@ -245,6 +244,8 @@
   ;; Make sure files end in a newline
   (setq require-final-newline t)
 
+  ;; Show git diff in gutter
+  (git-gutter-mode)
   )
 (add-hook 'prog-mode-hook 'my-prog-mode-hook)
 (add-hook 'yaml-mode-hook 'my-prog-mode-hook)
@@ -327,34 +328,7 @@
  (custom-set-faces '(markdown-code-face ((t (:inherit default :height 100)))))
  (lsp-ui-peek-always-show t)
  ;;(lsp-ui-sideline-show-hover t)
- (lsp-ui-doc-enable nil)
- :config (progn
-           ;;
-           ;; 2022-03-28 - fix sideline height computation
-           ;;
-           (defun lsp-ui-sideline--compute-height nil
-             "Return a fixed size for text in sideline."
-             (let ((fontHeight (face-attribute 'lsp-ui-sideline-global :height)))
-               (if (null text-scale-mode-remapping)
-                   '(height
-                     (if (floatp fontHeight) fontHeight
-                       (/ (face-attribute 'lsp-ui-sideline-global :height) 100.0)
-                       )
-                     ;; readjust height when text-scale-mode is used
-                     (list 'height
-                           (/ 1 (or (plist-get (cdr text-scale-mode-remapping) :height)
-                                    1)))))))
-
-           ;;
-           ;; 2022-03-28 - fix sideline alignment
-           ;;
-           (defun lsp-ui-sideline--align (&rest lengths)
-             "Align sideline string by LENGTHS from the right of the window."
-             (list (* (window-font-width nil 'lsp-ui-sideline-global)
-                      (+ (apply '+ lengths) (if (display-graphic-p) 1 2)))))))
-
-
-
+ (lsp-ui-doc-enable nil))
 
 (use-package rustic
  :straight t

@@ -7,8 +7,8 @@
 
 (eval-when-compile (defvar completion-preview-sort-function)
                    (defvar undo-tree-auto-save-history)
-                   (defvar yas/fallback-behavior)
-                   (defvar yas/minor-mode)
+                   (defvar yas-fallback-behavior)
+                   (defvar yas-minor-mode)
                    (defvar company-idle-delay)
                    (defvar company-tooltip-idle-delay)
                    (defvar company-require-match)
@@ -33,7 +33,7 @@
 (declare-function helpful-function "helpful")
 (declare-function company-mode "company")
 (declare-function company-complete-common "company")
-(declare-function yas/expand "yasnippet")
+(declare-function yas-expand "yasnippet")
 (declare-function nerd-icons-completion-mode "nerd-icons-completion")
 (declare-function prescient-completion-sort "prescient")
 (declare-function vertico-prescient-mode "vertico-prescient")
@@ -51,6 +51,9 @@
 ;; General appearance
 ;;
 
+;;
+;; Theme
+;;
 (use-package tokyo-night
   :straight t
   :config
@@ -232,15 +235,14 @@
 
 (defun do-yas-expand ()
   "Perform yas expansion."
-  (let ((yas/fallback-behavior 'return-nil))
-    (yas/expand)))
+    (yas-expand))
 
 (defun tab-indent-or-complete ()
   "Company completion in minibuffer."
   (interactive)
   (if (minibufferp)
       (minibuffer-complete)
-    (if (or (not yas/minor-mode)
+    (if (or (not yas-minor-mode)
             (null (do-yas-expand)))
         (if (check-expansion)
             (company-complete-common)
