@@ -100,8 +100,8 @@
    ;; Allow search to use M-\<, M-\>, C-v, M-v
    isearch-allow-motion t
 
-   ;; Scroll sreen when point gets within 8 lines of top/bottom of window
-   scroll-margin 8
+   ;; Scroll sreen when point gets within 1 lines of top/bottom of window
+   scroll-margin 1
 
    ;; Try and indent line. Otherwise attempt completion at point.
    tab-always-indent 'complete

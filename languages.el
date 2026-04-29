@@ -4,23 +4,24 @@
 ;;; Programming language support
 
 ;;; Code:
-(eval-when-compile (defvar treesit-language-source-alist))
-(eval-when-compile (defvar magit-mode-map))
-(eval-when-compile (defvar magit-no-confirm))
-(eval-when-compile (defvar magit-display-buffer-function))
-(eval-when-compile (defvar Info-directory-list))
-
-(eval-when-compile (defvar custom-c-tab-stop))
+(eval-when-compile (defvar treesit-language-source-alist)
+                   (defvar magit-mode-map)
+                   (defvar magit-no-confirm)
+                   (defvar magit-display-buffer-function)
+                   (defvar Info-directory-list)
+                   (defvar custom-c-tab-stop))
 
 (declare-function global-tree-sitter-mode "tree-sitter")
 (declare-function global-flycheck-mode "flycheck")
 (declare-function info-initialize "info")
+(declare-function diff-hl-mode "diff-hl")
 (declare-function smartparens-global-mode "smartparens")
 (declare-function sp-with-modes "smartparens")
 (declare-function sp-local-pair "smartparens")
 (declare-function highlight-doxygen-mode "highlight-doxygen")
 (declare-function company-mode "company")
 (declare-function dumb-jump-xref-activate "dumb-jump")
+
 
 ;;
 ;; Bitbake
@@ -93,7 +94,6 @@
            yaml-mode
            ) . tree-sitter-hl-mode)))
 
-
 ;; Remap programming major modes to Tree-Sitter
 (setq major-mode-remap-alist
       '(
@@ -117,29 +117,6 @@
   :if (executable-find "tree-sitter")
   :after tree-sitter)
 
-;;
-;; Inline error checking
-;;
-(use-package flycheck
-  :straight t
-  :config
-  (add-hook 'after-init-hook #'global-flycheck-mode))
-
-;; Format all languages
-(use-package format-all
-  :straight t)
-
-;;
-;; Eglot client for the Language Server Protocol (LSP)
-;;
-(use-package eglot
-  :straight (:type built-in)
-  :custom-face
-  (eglot-highlight-symbol-face ((t (:inherit secondary-selection))))
-  :config
-  (setq eglot-events-buffer-config 0
-        eglot-ignored-server-capabilities '(:inlayHintProvider)
-        eglot-confirm-server-edits nil))
 
 ;;
 ;; Magit - a git porcelain
@@ -179,23 +156,45 @@
 ;; Treemacs magit
 (use-package treemacs-magit :straight t)
 
-;;git history views and git blame
+;; git history views and git blame
 (use-package git-timemachine)
 
-;; Show git diff in fringe
-(use-package fringe-helper :straight t)
-(use-package git-gutter-fringe
+;; Use diff-hl to display diffs in gutter
+(use-package diff-hl
+  :straight t
   :config
-  ;; Please adjust fringe width if your own sign is too big.
   (setq-default left-fringe-width  10)
-  (setq-default right-fringe-width 10)
-  (set-face-foreground 'git-gutter-fr:modified "yellow")
-  (set-face-foreground 'git-gutter-fr:added    "blue")
-  (set-face-foreground 'git-gutter-fr:deleted  "white"))
+  (setq-default right-fringe-width 10))
+(add-hook 'magit-post-refresh-hook 'diff-hl-magit-post-refresh)
+
 
 ;;
-;; Smart paren handling
+;; Inline error checking
 ;;
+(use-package flycheck
+  :straight t
+  :config
+  (add-hook 'after-init-hook #'global-flycheck-mode))
+
+;; Format all languages
+(use-package format-all
+  :straight t)
+
+
+;;
+;; Eglot client for the Language Server Protocol (LSP)
+;;
+(use-package eglot
+  :straight (:type built-in)
+  :custom-face
+  (eglot-highlight-symbol-face ((t (:inherit secondary-selection))))
+  :config
+  (setq eglot-events-buffer-config 0
+        eglot-ignored-server-capabilities '(:inlayHintProvider)
+        eglot-confirm-server-edits nil))
+
+
+;; Smart paren handling
 (use-package smartparens
   :config
   (require 'smartparens-config)
@@ -206,21 +205,23 @@
     (sp-local-pair "(" nil :post-handlers '(:add ("||\n[i]" "RET")))
     (sp-local-pair "{" nil :post-handlers '(:add ("||\n[i]" "RET")))))
 
+
+;;
+;; Common programming modes
+;;
+
+;; Doxygen
 (use-package highlight-doxygen :straight t)
 
-;; Override programming mode settings
 (defun my-prog-mode-hook ()
   "Programming modes customization hook."
 
   ;; I love PragmataPro for source code...
   (face-remap-add-relative 'default :family "PragmataPro Mono Liga" :height 105)
 
-  ;; Italicize comments - This doesn't work with doom-themes
-  ;; '(font-lock-comment-delimiter-face ((t (:slant italic))))
-  ;; '(font-lock-comment-face ((t (:slant italic))))
-  ;; '(font-lock-doc-face ((t (:slant italic))))
+  ;; Italicize comments
   (custom-set-faces '(font-lock-comment-face ((t (:slant italic)))))
-  ;;(custom-set-faces '(font-lock-doc-face ((t (:slant italic)))))
+  (custom-set-faces '(font-lock-doc-face ((t (:slant italic)))))
 
   ;; Highlight Doxygen comments
   (highlight-doxygen-mode)
@@ -245,14 +246,18 @@
   (setq require-final-newline t)
 
   ;; Show git diff in gutter
-  (git-gutter-mode)
-  )
+  (diff-hl-mode))
 (add-hook 'prog-mode-hook 'my-prog-mode-hook)
 (add-hook 'yaml-mode-hook 'my-prog-mode-hook)
 
 (defun languages-tab-stops (x)
   "Create list of X tab stops."
   (number-sequence x 160 x))
+
+
+;;
+;; C/C++
+;;
 
 ;; My customization for all of c-mode, c++-mode, and objc-mode
 (defun my-c-ts-mode-hook ()
