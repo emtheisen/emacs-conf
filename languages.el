@@ -262,9 +262,9 @@
 ;; My customization for all of c-mode, c++-mode, and objc-mode
 (defun my-c-ts-mode-hook ()
   "C/C++ customization hook."
- '(c-ts-mode-indent-style . 'bsd)
+ (setq c-ts-mode-indent-style 'bsd)
 
- '(c-ts-mode-indent-offset . custom-c-tab-stop)
+ (setq c-ts-mode-indent-offset custom-c-tab-stop)
 
  ;; this will make sure spaces are used instead of tabs
  (setq tab-width 8 indent-tabs-mode nil)
