@@ -76,10 +76,10 @@
 (use-package treemacs-icons-dired :straight t)
 (use-package treemacs-nerd-icons :straight t)
 
-;; Emojis... some terminal emulators support them so, no check for graphical display
+;; Emojis...
 (use-package emojify :straight t)
 
-;; Enables font ligature globally in all buffers.
+;; Enables font ligatures globally in all buffers.
 (use-package ligature
   :straight t
   :config
@@ -109,17 +109,20 @@
   (setq persp-suppress-no-prefix-key-warning t)
   (persp-mode))
 
+;;
+;; [NOTE] I use PragmataPro's ligatures to highlight todos.
+;;
 ;; Highlight todos
-(use-package hl-todo
-  :straight t
-  :config
-  (setq hl-todo-keyword-faces
-        '(("TODO"   . "#DAA520")
-          ("DONE"   . "#32CD32")
-          ("INFO"   . "#7777FF")
-          ("NOTE"   . "#7777FF")
-          ("FIXME"  . "#FF0000")))
-  (global-hl-todo-mode))
+;; (use-package hl-todo
+;;   :straight t
+;;   :config
+;;   (setq hl-todo-keyword-faces
+;;         '(("TODO"   . "#DAA520")
+;;           ("DONE"   . "#32CD32")
+;;           ("INFO"   . "#7777FF")
+;;           ("NOTE"   . "#7777FF")
+;;           ("FIXME"  . "#FF0000")))
+;;   (global-hl-todo-mode))
 
 ;; Breadcrumbs
 (use-package breadcrumb :straight t)

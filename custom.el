@@ -271,11 +271,14 @@
 
 (add-hook 'minibuffer-mode-hook #'my-minibuffer-set-font)
 
+
 ;;
-;; Start Emacs Server for emacsclient(s)
+;; Emacs Server for emacsclient(s)
 ;;
+
 (require 'server)
 (when (not (server-running-p)) (server-start))
+
 
 ;;
 ;; Shells

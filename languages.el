@@ -9,7 +9,9 @@
                    (defvar magit-no-confirm)
                    (defvar magit-display-buffer-function)
                    (defvar Info-directory-list)
-                   (defvar custom-c-tab-stop))
+                   (defvar custom-c-tab-stop)
+                   (defvar c-ts-mode-indent-style)
+                   (defvar c-ts-mode-indent-offset))
 
 (declare-function global-tree-sitter-mode "tree-sitter")
 (declare-function global-flycheck-mode "flycheck")
@@ -75,6 +77,7 @@
            markdown-mode
            python-mode
            rust-mode
+           toml-mode
            yaml-mode
            ) . tree-sitter-mode)
          ((
@@ -91,6 +94,7 @@
            markdown-mode
            python-mode
            rust-mode
+           toml-mode
            yaml-mode
            ) . tree-sitter-hl-mode)))
 
@@ -107,6 +111,7 @@
         (python-mode . python-ts-mode)
         (rust-mode . rust-ts-mode)
         (sh-mode . bash-ts-mode)
+        (toml-mode . toml-ts-mode)
         (yaml-mode . yaml-ts-mode)))
 
 ;; Enable Tree-Sitter in any available buffers
@@ -117,6 +122,12 @@
   :if (executable-find "tree-sitter")
   :after tree-sitter)
 
+;;
+;; Mickey's Combobulate
+;;
+(straight-use-package '(dotcrafter :host github
+                                   :repo "mickeynp/combobulate"
+                                   :branch "master"))
 
 ;;
 ;; Magit - a git porcelain
@@ -276,7 +287,7 @@
  (setq comment-fill-column 60)
  (setq comment-style 'extra-line)
 
- ;; other customizations
+ ;; other customization
  (electric-indent-mode)
  ;;(electric-pair-mode) ;; using smartparens in lieu of
  )
@@ -353,7 +364,7 @@
  ;; (setq lsp-signature-auto-activate nil)
 
  ;; Enable electric pairing of delimiters
- ;;(electric-pair-mode nil)
+ ;;(electric-pair-mode nil)  ;; using smartparens in lieu of
 
  ;; comment to disable rustfmt on save
  (setq rustic-format-on-save t)
