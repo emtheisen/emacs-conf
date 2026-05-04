@@ -109,21 +109,6 @@
   (setq persp-suppress-no-prefix-key-warning t)
   (persp-mode))
 
-;;
-;; [NOTE] I use PragmataPro's ligatures to highlight todos.
-;;
-;; Highlight todos
-;; (use-package hl-todo
-;;   :straight t
-;;   :config
-;;   (setq hl-todo-keyword-faces
-;;         '(("TODO"   . "#DAA520")
-;;           ("DONE"   . "#32CD32")
-;;           ("INFO"   . "#7777FF")
-;;           ("NOTE"   . "#7777FF")
-;;           ("FIXME"  . "#FF0000")))
-;;   (global-hl-todo-mode))
-
 ;; Breadcrumbs
 (use-package breadcrumb :straight t)
 
@@ -135,6 +120,9 @@
         undo-tree-history-directory-alist
         '(("." . "~/.emacs.d/undo")))
   (global-undo-tree-mode))
+
+;; VTerm terminal emulator
+(use-package vterm  :straight t)
 
 ;; Helpful, enhance Emacs help system
 (use-package helpful

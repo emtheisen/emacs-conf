@@ -50,15 +50,28 @@
 	(c "https://github.com/tree-sitter/tree-sitter-c")
 	(cmake "https://github.com/uyha/tree-sitter-cmake")
 	(cpp "https://github.com/tree-sitter/tree-sitter-cpp")
+        (c-sharp "https://github.com/tree-sitter/tree-sitter-c-sharp")
         (css "https://github.com/tree-sitter/tree-sitter-css")
         (dart "https://github.com/nielsenko/tree-sitter-dart")
+        (dockerfile "https://github.com/camdencheek/tree-sitter-dockerfile")
 	(elisp "https://github.com/Wilfred/tree-sitter-elisp")
+        (elixir "https://github.com/elixir-lang/tree-sitter-elixir")
+        (go "https://github.com/tree-sitter/tree-sitter-go")
+        (heex "https://github.com/phoenixframework/tree-sitter-heex")
+        (html "https://github.com/tree-sitter/tree-sitter-html")
+        (mtml "https://github.com/withmtml/tree-sitter-mtml")
+        (java "https://github.com/tree-sitter/tree-sitter-java")
+        (javascript "https://github.com/tree-sitter/tree-sitter-javascript")
 	(json "https://github.com/tree-sitter/tree-sitter-json")
+        (lua "https://github.com/tjdevries/tree-sitter-lua")
 	(make "https://github.com/alemuller/tree-sitter-make")
 	(markdown "https://github.com/ikatyang/tree-sitter-markdown")
+        (php "https://github.com/tree-sitter/tree-sitter-php")
 	(python "https://github.com/tree-sitter/tree-sitter-python")
+        (ruby "https://github.com/tree-sitter/tree-sitter-ruby")
         (rust "https://github.com/tree-sitter/tree-sitter-rust")
 	(toml "https://github.com/tree-sitter/tree-sitter-toml")
+        (typescript "https://github.com/tree-sitter/tree-sitter-typescript")
 	(yaml "https://github.com/ikatyang/tree-sitter-yaml")
 	))
   :config
@@ -68,16 +81,20 @@
            c-mode
            c++-mode
            conf-toml-mode
-           cpp-mode
+           cpp-ts-mode
+           csharp-mode
            css-mode
-           dart-mode
-           json-mode
+           json-ts-mode
+           lua-mode
            makefile-mode
            makefile-gmake-mode
            markdown-mode
+           php-ts-mode
            python-mode
+           ruby-mode
            rust-mode
            toml-mode
+           typescript-ts-mode
            yaml-mode
            ) . tree-sitter-mode)
          ((
@@ -85,16 +102,20 @@
            c-mode
            c++-mode
            conf-toml-mode
-           cpp-mode
+           cpp-ts-mode
+           csharp-mode
            css-mode
-           dart-mode
-           json-mode
+           json-ts-mode
+           lua-mode
            makefile-mode
            makefile-gmake-mode
            markdown-mode
+           php-ts-mode
            python-mode
+           ruby-mode
            rust-mode
            toml-mode
+           typescript-ts-mode
            yaml-mode
            ) . tree-sitter-hl-mode)))
 
@@ -107,8 +128,12 @@
         (cpp-mode . c++-ts-mode)
         (c++-mode . c++-ts-mode)
         (conf-toml-mode . toml-ts-mode)
-        (json-mode . json-ts-mode)
+        (csharp-mode . csharp-ts-mode)
+        (css-mode . css-ts-mode)
+        (java-mode . java-ts-mode)
+        (lua-mode . lua-ts-mode)
         (python-mode . python-ts-mode)
+        (ruby-mode . ruby-ts-mode)
         (rust-mode . rust-ts-mode)
         (sh-mode . bash-ts-mode)
         (toml-mode . toml-ts-mode)
@@ -116,6 +141,22 @@
 
 ;; Enable Tree-Sitter in any available buffers
 (global-tree-sitter-mode 1)
+
+;; TypeScript
+
+(add-to-list 'auto-mode-alist '("\\.ts\\'" . typescript-ts-mode))
+
+(defun typescript-ts-mode-hook-func ()
+  (lsp-deferred))
+(add-hook 'typescript-ts-mode-hook #'typescript-ts-mode-hook-func)
+
+;; TSX
+
+(add-to-list 'auto-mode-alist '("\\.tsx\\'" . tsx-ts-mode))
+
+(defun tsx-ts-mode-hook-func ()
+  (lsp-deferred))
+(add-hook 'tsx-ts-mode-hook #'tsx-ts-mode-hook-func)
 
 ;; Tree-Sitter Language bundle
 (use-package tree-sitter-langs
@@ -320,6 +361,7 @@
 (use-package lsp-mode
  :straight t
  :commands lsp
+ :diminish lsp-mode
  :custom
  ;; what to use when checking on-save. "check" is default, I prefer clippy
  (lsp-rust-analyzer-cargo-watch-command "clippy")
@@ -334,7 +376,11 @@
  (lsp-rust-analyzer-display-closure-return-type-hints t)
  (lsp-rust-analyzer-display-parameter-hints nil)
  (lsp-rust-analyzer-display-reborrow-hints nil)
- (add-hook 'lsp-mode-hook 'lsp-ui-mode))
+ (add-hook 'lsp-mode-hook 'lsp-ui-mode)
+ :hook
+ (elixir-ts-mode . lsp)
+ :init
+ (add-to-list 'exec-path "~/proj/elixir-ls/release"))
 
 (use-package lsp-ui
  :straight t
@@ -369,6 +415,8 @@
  ;; comment to disable rustfmt on save
  (setq rustic-format-on-save t)
  (add-hook 'rustic-mode-hook 'rk/rustic-mode-hook)
+ :custom
+ (rustic-analyzer-command '("rustup" "run" "stable" "rust-analyzer"))
  :after(rust-mode))
 
 (defun rk/rustic-mode-hook ()
@@ -417,7 +465,6 @@
          :request "launch"
          :name "LLDB::Run"
          )))
-
 
 ;;
 ;; PlatformIO
